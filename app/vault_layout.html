@@ -1,0 +1,30 @@
+{%extends 'layout.html'%}
+
+{%block layouthead%}
+<link rel='stylesheet' href="{{url_for('static', filename='vault_layout.css')}}">
+<script src="{{url_for('static', filename='base.js')}}"></script>
+{%block head%}{%endblock%}
+{%endblock%}
+
+{%block layoutcontent%}
+<div id='vault-content'>
+{%with msgs = get_flashed_messages()%}
+  {%if msgs%}
+  <div class='flash-box'>
+    {%for msg in msgs%}
+    <div class='flash'>{{msg}}</div>
+    {%endfor%}
+  </div>
+  {%endif%}
+{%endwith%}
+<div id='main-menu'>
+  <nav>
+    <a href="{{url_for('vault.index')}}">H</a>
+    <a href="{{url_for('todo.index')}}">T</a>
+  </nav>
+</div>
+<div id='main-content'>
+{%block content%}{%endblock%}
+</div>
+</div>
+{%endblock%}
