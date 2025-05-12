@@ -1,0 +1,119 @@
+@import 'reset.css';
+
+:root {
+  --font-base: 'Roboto', sans-serif;
+  --font-mono: 'Fira Code', monospace;
+  --color-bg: #fbf1c7;
+  --color-lightbg: #f2e5bc;
+  --color-fg: #3c3836;
+  --color-lightfg: #504945;
+  --color-gray: #7c6f64;
+  --color-lightgray: #928374;
+  --color-red: #cc241d;
+  --color-lightred: #9d0006;
+  --color-green: #98971a;
+  --color-lightgreen: #79740e;
+  --color-yellow: #d79921;
+  --color-lightyellow: #b57614;
+  --color-blue: #458588;
+  --color-lightblue: #076678;
+  --color-purple: #b16286;
+  --color-lightpurple: #8f3f71;
+  --color-aqua: #689d6a;
+  --color-lightaqua: #427b58;
+  --color-orange: #d65d0e;
+  --color-lightorange: #af3a03;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #282828;
+    --color-lightbg: #32302f;
+    --color-fg: #ebdbb2;
+    --color-lightfg: #f2e5bc;
+    --color-gray: #928374;
+    --color-lightgray: #a89984;
+    --color-red: #cc241d;
+    --color-lightred: #fb4934;
+    --color-green: #98971a;
+    --color-lightgreen: #b8bb26;
+    --color-yellow: #d79921;
+    --color-lightyellow: #fabd2f;
+    --color-blue: #458588;
+    --color-lightblue: #83a598;
+    --color-purple: #b16286;
+    --color-lightpurple: #d3869b;
+    --color-aqua: #689d6a;
+    --color-lightaqua: #8ec07c;
+    --color-orange: #d65d0e;
+    --color-lightorange: #fe8019;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  color: var(--color-fg);
+  background: var(--color-bg);
+  font-family: var(--font-base);
+  height: 100svh;
+  width: 100svw;
+  display: flex;
+  font-size: 20px;
+  overflow: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+input, textarea, select {
+  color: var(--color-fg);
+  font-size: 1em;
+  background: var(--color-lightbg);
+  padding: 0.25em;
+  border-radius: 0.5em;
+  min-width: 0;
+  outline: none;
+  border: none;
+}
+select {
+  border: 1px solid var(--color-gray);
+}
+input::placeholder, textarea::placeholder {
+  color: var(--color-gray);
+}
+
+.hidden {
+  display: none;
+}
+
+button {
+  width: 1.5em;
+  height: 1.5em;
+  font-size: 1em;
+  background: none;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-fg);
+}
+svg {
+  width: 100%;
+  height: 100%;
+}
+svg path {
+  stroke: var(--color-fg);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.filledIcon {
+  fill: var(--color-fg);
+}
