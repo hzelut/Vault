@@ -12,14 +12,12 @@ export default function Page() {
     const name = formData.get('name') as string
     const passwd = formData.get('passwd') as string
 
-    await fetchAPI('login/api', {
+    const res = await fetchAPI('login/api', {
       method: 'POST',
       data: {name: name, passwd: passwd}
     })
-    .then(res => {
-      if(res)
-        router.push('/vault')
-    })
+
+    if(res) router.push('/vault')
   }
 
   return (

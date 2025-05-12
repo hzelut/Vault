@@ -20,16 +20,14 @@ export default async function fetchAPI(url: string, options: FetchOptions) {
     if(params && method === 'GET')
       fullUrl = `${url}?${makeUrlParams(params)}`
 
-    return await fetch(fullUrl, {
+    const res = await fetch(fullUrl, {
       method,
       headers: { 'Content-Type': 'application/json' },
       body: data? JSON.stringify(data) : null
     })
-    .then(res => {
-      if(!res.ok)
-        return res.json().then(err => {throw err})
-      return res.json()
-    })
+
+    if(!res.ok) throw await res.json()
+    return await res.json()
   } catch(err) {
     throw err
   }

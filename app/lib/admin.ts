@@ -47,10 +47,9 @@ export async function login(name: string, passwd: string): Promise<AdminResult|n
       throw new Error(`Wrong name: ${name}`)
 
     const admin = res[0]
-    await bcrypt.compare(passwd, admin.passwd).then(res => {
-      if(!res)
-        throw new Error(`Wrong passwd: ${passwd}`)
-    })
+    const hashRes = await bcrypt.compare(passwd, admin.passwd)
+    if(!hashRes)
+      throw new Error(`Wrong passwd: ${passwd}`)
 
     const token = await makeToken(admin.name)
 

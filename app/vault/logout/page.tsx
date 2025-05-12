@@ -10,13 +10,11 @@ export default function Page() {
 
   useEffect(() => {
     async function logout() {
-      await fetchAPI('logout/api', {
+      const res = await fetchAPI('logout/api', {
         method: 'POST',
       })
-      .then(res => {
-        if(res)
-          router.push('/blog')
-      })
+
+      if(res) router.push('/blog')
     }
 
     logout()
