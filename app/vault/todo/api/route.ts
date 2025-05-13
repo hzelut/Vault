@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { create, getInbox } from '@/app/lib/todo'
+import { create, getInbox, update } from '@/app/lib/todo'
+import { TodoType } from '@/app/types/todo'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
@@ -22,6 +23,21 @@ export async function PUT(req: NextRequest) {
 
     if(res > 0)
       return NextResponse.json({id: res},{status: 200})
+  } catch(err) {
+    console.error(err)
+  }
+
+  return NextResponse.json({ message:'Failed' }, { status: 400 })
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const item: TodoType = await req.json()
+    const res = await update(item)
+
+    console.log(item)
+    if(res)
+      return NextResponse.json({id: item.id},{status: 200})
   } catch(err) {
     console.error(err)
   }

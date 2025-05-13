@@ -9,6 +9,8 @@ export type TodoType = {
   memo?: string
   done?: number
   date?: number
+  date_string?: string
+  time_string?: string
   repeat_interval?: number
   repeat_unit?: RepeatUnit
   created_at: number
