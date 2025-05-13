@@ -5,10 +5,12 @@ export function createHandleFormChange<T>(setState: React.Dispatch<React.SetStat
 }
 
 export function createHandleFormArrayChange<T>(
-  setState: React.Dispatch<React.SetStateAction<T[]>>,
-  index: number
+  setState: React.Dispatch<React.SetStateAction<T[]>>
 ) {
-  return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  return (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    index: number
+  ) => {
     setState(prev =>
       prev.map((item, i) =>
         i === index ? { ...item, [e.target.name]: e.target.value } : item
