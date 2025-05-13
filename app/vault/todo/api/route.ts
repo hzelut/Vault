@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { create, getInbox, update } from '@/app/lib/todo'
-import { TodoType } from '@/app/types/todo'
+import { create, gets, update } from '@/app/lib/todo'
+import { TodoType, TodoCategory } from '@/app/types/todo'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
-  const action = searchParams.get('a')
-  let data = null
-
-  switch(action) {
-    case 'inbox':
-      data = await getInbox()
-      break
-  }
+  const action = searchParams.get('a') as TodoCategory
+  const data = await gets(action)
 
   return NextResponse.json({data: data})
 }

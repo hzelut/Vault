@@ -1,5 +1,6 @@
 import fetchQuery from '@/app/lib/database'
 import * as types from '@/app/types/todo'
+import { getToday, shiftDate } from '@/app/utils/date'
 
 export async function create(name: string): Promise<number|null> {
   try {
@@ -40,7 +41,6 @@ export async function remove(id: number): Promise<boolean> {
   return false
 }
 
-
 export async function update(item: types.TodoType): Promise<boolean> {
   try {
     const today = Math.floor(new Date().getTime() / 1000)
@@ -63,13 +63,34 @@ export async function update(item: types.TodoType): Promise<boolean> {
   return false
 }
 
-export async function getInbox(): Promise<Array<types.TodoType>|null> {
+export async function gets(category: types.TodoCategory): Promise<Array<types.TodoType>|null> {
   try {
-    const res = await fetchQuery(
-      `SELECT * FROM ${types.TABLE}
-       WHERE done IS NULL AND date IS NULL
-      `, []
-    ) as Array<types.TodoType>
+    let query = `SELECT * FROM ${types.TABLE} `
+    const args = []
+
+    if(category === 'inbox') {
+      query += 'WHERE done IS NULL AND date IS NULL'
+    }
+    else if(category === 'done') {
+      query += `WHERE done IS NOT NULL ORDER BY done ASC`
+    }
+    else {
+      const tomorrow = shiftDate(getToday(), {days:1})
+      args.push(tomorrow)
+      query += 'WHERE done IS NULL AND '
+
+      if(category === 'today') {
+        query += 'date < ?'
+      }
+      else if(category === 'upcomming') {
+        const until = shiftDate(tomorrow, {days:7})
+        query += 'date >= ? AND date < ?'
+        args.push(until)
+      }
+      query += ' ORDER BY date ASC'
+    }
+
+    const res = await fetchQuery(query, args) as Array<types.TodoType>
 
     return res
   } catch(err) {

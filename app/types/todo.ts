@@ -2,6 +2,7 @@ export const TABLE = 'todos'
 export const TABLE_ID = 1
 
 export type RepeatUnit = 'days'|'weeks'|'months'
+export type TodoCategory = 'inbox'|'upcomming'|'today'|'done'|'all'
 
 export type TodoType = {
   id: number
