@@ -5,9 +5,8 @@ import { useState, useEffect } from 'react'
 import styles from './page.module.css'
 import fetchAPI from '@/app/utils/api'
 import { TodoType } from '@/app/types/todo'
-import Modal from '@/app/components/modal'
-import { createHandleFormChange } from '@/app/utils/form'
-import { timestampToDateTime, dateTimeToTimestamp } from '@/app/utils/date'
+import { createHandleFormArrayChange } from '@/app/utils/form'
+import { getToday, timestampToDateTime, dateTimeToTimestamp } from '@/app/utils/date'
 
 async function create(form: HTMLFormElement) {
   const name = (form.elements.namedItem('name') as HTMLInputElement)?.value
@@ -29,11 +28,19 @@ async function gets(action: string): Promise<Array<TodoType>> {
   return res?.data
 }
 
-async function update(data: TodoType) {
-    const item = {...data}
-    const date = dateTimeToTimestamp(item.date_string, item.time_string)
+async function update(form: HTMLFormElement) {
+  const formData = new FormData(form)
+  const item: TodoType = Object.fromEntries(formData.entries()) as unknown as TodoType
+
+  const date = dateTimeToTimestamp(item.date_string, item.time_string)
+  if(date)
     item.date = date
-    item.date_string = item.time_string = null
+
+  // cleanup
+  delete item.date_string
+  delete item.time_string
+  if(!item.memo)
+    delete item.memo
 
   await fetchAPI('todo/api', {
     method: 'POST',
@@ -43,16 +50,26 @@ async function update(data: TodoType) {
 
 export default function Page() {
   const [Inbox, setInbox] = useState<Array<TodoType>>()
-  const [IsModal, setIsModal] = useState<boolean>(false)
-  const [Selected, setSelected] = useState<TodoType>()
-  const handleFormChange = createHandleFormChange(setSelected)
+  const [Today, setToday] = useState<Array<TodoType>>()
+  const [Upcomming, setUpcomming] = useState<Array<TodoType>>()
+  const [Selected, setSelected] = useState<number>()
 
   useEffect(() => {
     fetchInbox()
+    fetchToday()
+    fetchUpcomming()
   }, [])
 
   async function fetchInbox() {
     setInbox(await gets('inbox'))
+  }
+
+  async function fetchToday() {
+    setToday(await gets('today'))
+  }
+
+  async function fetchUpcomming() {
+    setUpcomming(await gets('upcomming'))
   }
 
   async function handleNew(e: React.FormEvent) {
@@ -61,51 +78,130 @@ export default function Page() {
     await fetchInbox()
   }
 
-  function onClickItem(item: TodoType) {
-    const copyItem = {...item}
-    const {date, time} = timestampToDateTime(copyItem.date)
-    copyItem.date_string = date
-    copyItem.time_string = time
-
-    setSelected(copyItem)
-    setIsModal(true)
-  }
-
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
-    await update(Selected)
+    const form = e.currentTarget as HTMLFormElement
+    await update(form)
+  }
+
+  function itemsView(
+    state: [Array<TodoType>, React.Dispatch<React.SetStateAction<Array<TodoType>>>]
+  ) {
+    if(!state[0] || state[0].length === 0) return null;
+
+    const [Items, setItems] = state
+    const handleChange = createHandleFormArrayChange(setItems)
+
+    function onClickItem(index: number, id: number) {
+      const {date, time} = timestampToDateTime(Items[index].date)
+
+      setItems(
+        prev =>
+          prev.map(
+            (item, i) => i === index ? { ...item, date_string: date, time_string: time} : item
+        )
+      )
+      setSelected(id)
+    }
+
+    function onClickDate(index: number) {
+      let value = null
+
+      if(!Items[index]?.date_string) {
+        const {date} = timestampToDateTime(getToday())
+        value = date
+      }
+
+      setItems(
+        prev =>
+          prev.map(
+            (item, i) => i === index ? { ...item, date_string: value} : item
+        )
+      )
+    }
+
+    function onClickTime(index: number) {
+      let timeValue = null
+      let dateValue = null
+
+      if(!Items[index]?.time_string) {
+        const {date, time} = timestampToDateTime(getToday())
+        timeValue = time
+        dateValue = date
+      }
+
+      setItems(
+        prev =>
+          prev.map(
+            (item, i) => i === index ? { ...item, date_string: dateValue, time_string: timeValue} : item
+        )
+      )
+    }
+
+    return (
+      <div className={styles.items}>
+        {Items.map((item, i) => (<>
+          {item.id === Selected ?
+            <form className={styles.item} key={item.id} onSubmit={handleSave}>
+              <input type='number' name='id' value={item.id} hidden />
+              <input type='text' name='name' value={item.name} onChange={e => handleChange(e, i)} />
+              <input type='text' name='memo'
+                placeholder='memo...'
+                value={item.memo} onChange={e => handleChange(e, i)}
+              />
+              <div className={styles.date}>
+                { item?.date_string &&
+                <input type='date' name='date_string' value={item.date_string} onChange={e => handleChange(e, i)} />
+                }
+                { item?.time_string &&
+                  <input type='time' name='time_string' value={item.time_string} onChange={e => handleChange(e, i)} />
+                }
+              </div>
+              <div className={styles.btns}>
+                <input type='button' value='D' onClick={() => onClickDate(i)}/>
+                <input type='button' value='T' onClick={() => onClickTime(i)}/>
+              </div>
+              <input type='submit' value='Save'/>
+            </form>
+            :
+            <div className={styles.item} key={item.id}
+              onClick={() => onClickItem(i, item.id)}
+            >
+              <div className={styles.name}>{item.name}</div>
+            </div>
+          }
+        </>))}
+      </div>
+    )
   }
 
   return (
     <div className={styles.page}>
-      {Selected &&
-      <Modal state={[IsModal, setIsModal]}>
-        <form onSubmit={handleSave}>
-          <input type='text' name='name' value={Selected.name} onChange={handleFormChange} />
-          <input type='text' name='memo' value={Selected.memo} onChange={handleFormChange} />
-          <input type='date' name='date_string' value={Selected.date_string} onChange={handleFormChange} />
-          <input type='time' name='time_string' value={Selected.time_string} onChange={handleFormChange} />
-          <input type='submit' value='Save'/>
-        </form>
-      </Modal>
-      }
       <form onSubmit={handleNew}>
         <input type='text' name='name' placeholder='new...' required />
         <input type='submit' hidden />
       </form>
       {Inbox &&
       <div className={styles.inbox}>
-        <div className={styles.items}>
-          {Inbox?.map(item => (
-          <div className={styles.item} key={item.id}
-            onClick={() => onClickItem(item)}
-          >
-            <div className={styles.name}>{item.name}</div>
-          </div>
-          ))}
-        </div>
+        {itemsView([Inbox, setInbox])}
       </div>
       }
+      <div className={styles.today}>
+        <div className={styles.header}>
+          Today
+        </div>
+        {Today ?
+          <>{itemsView([Today, setToday])}</>
+        :
+        <div>All done!!</div>
+        }
+      </div>
+      <div className={styles.upcomming}>
+        <div className={styles.header}>
+          Upcomming
+        </div>
+        {itemsView([Upcomming, setUpcomming])}
+      </div>
     </div>
   )
 }
