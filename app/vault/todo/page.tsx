@@ -7,6 +7,7 @@ import fetchAPI from '@/app/utils/api'
 import { TodoType } from '@/app/types/todo'
 import { createHandleFormArrayChange } from '@/app/utils/form'
 import { getToday, timestampToDateTime, dateTimeToTimestamp } from '@/app/utils/date'
+import Button from '@/app/components/button'
 
 async function create(form: HTMLFormElement) {
   const name = (form.elements.namedItem('name') as HTMLInputElement)?.value
@@ -105,35 +106,17 @@ export default function Page() {
     }
 
     function onClickDate(index: number) {
-      let value = null
-
-      if(!Items[index]?.date_string) {
-        const {date} = timestampToDateTime(getToday())
-        value = date
-      }
-
-      setItems(
-        prev =>
-          prev.map(
-            (item, i) => i === index ? { ...item, date_string: value} : item
-        )
-      )
-    }
-
-    function onClickTime(index: number) {
-      let timeValue = null
-      let dateValue = null
+      let date = null
+      let time = null
 
       if(!Items[index]?.time_string) {
-        const {date, time} = timestampToDateTime(getToday())
-        timeValue = time
-        dateValue = date
+        ({date: date, time: time} = timestampToDateTime(getToday()))
       }
 
       setItems(
         prev =>
           prev.map(
-            (item, i) => i === index ? { ...item, date_string: dateValue, time_string: timeValue} : item
+            (item, i) => i === index ? { ...item, date_string: date, time_string: time} : item
         )
       )
     }
@@ -158,8 +141,7 @@ export default function Page() {
                 }
               </div>
               <div className={styles.btns}>
-                <input type='button' value='D' onClick={() => onClickDate(i)}/>
-                <input type='button' value='T' onClick={() => onClickTime(i)}/>
+                <Button type='calendar' onClick={() => onClickDate(i)} />
               </div>
               <input type='submit' value='Save'/>
             </form>
