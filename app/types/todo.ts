@@ -1,7 +1,8 @@
 export const TABLE = 'todos'
 export const TABLE_ID = 1
 
-export type RepeatUnit = 'days'|'weeks'|'months'
+export const RepeatUnitArray = ['days','weeks','months']
+export type RepeatUnit = typeof RepeatUnitArray[number]
 export type TodoCategory = 'inbox'|'upcomming'|'today'|'done'|'all'
 
 export type TodoType = {
