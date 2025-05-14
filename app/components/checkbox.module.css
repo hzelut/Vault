@@ -1,0 +1,14 @@
+.checkbox input {
+}
+
+.checkmark {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border: 2px solid var(--color-lightfg);
+  border-radius: 0.25em;
+}
+
+.checkbox input:checked + .checkmark {
+  background: var(--color-lightgray);
+}
