@@ -53,24 +53,15 @@ const iconMap = {
 
 type ButtonProps = {
   type: keyof typeof iconMap
-  onClick?: React.MouseEventHandler<HTMLButtonElement>
+  onClick?: React.MouseEventHandler<HTMLDivElement>
 }
 
 export default function Button({ type, onClick }: ButtonProps) {
   const icon = iconMap[type]
 
-  if(onClick) {
-    return (
-      <button onClick={onClick} className={styles.button}>
-        {icon()}
-      </button>
-    )
-  }
-  else {
-    return (
-      <div className={styles.button}>
-        {icon()}
-      </div>
-    )
-  }
+  return (
+    <div onClick={onClick} className={styles.button}>
+      {icon()}
+    </div>
+  )
 }
