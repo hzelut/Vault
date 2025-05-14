@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 
 import styles from './page.module.css'
 import fetchAPI from '@/app/utils/api'
-import { TodoType } from '@/app/types/todo'
+import { TodoType, RepeatUnitArray } from '@/app/types/todo'
 import { createHandleFormArrayChange } from '@/app/utils/form'
 import { getToday, timestampToDateTime, dateTimeToTimestamp, dateFormat } from '@/app/utils/date'
 import Button from '@/app/components/button'
@@ -43,6 +43,9 @@ async function update(form: HTMLFormElement) {
   delete item.time_string
   if(!item.memo)
     delete item.memo
+  if(!item.repeat_interval) {
+    item.repeat_interval = item.repeat_unit = null
+  }
 
   await fetchAPI('todo/api', {
     method: 'PATCH',
@@ -96,7 +99,8 @@ export default function Page() {
     const handleChange = createHandleFormArrayChange(setItems)
 
     function onClickItem(index: number, id: number) {
-      const {date, time} = timestampToDateTime(Items[index].date)
+      const item: TodoType = Items[index]
+      const {date, time} = timestampToDateTime(item.date)
 
       setItems(
         prev =>
@@ -123,8 +127,19 @@ export default function Page() {
       )
     }
 
-    async function onClickDone(e: React.FormEvent, id: number) {
-      e.stopPropagation()
+    function onClickRepeat(index: number) {
+      let repeat_unit = Items[index].repeat_unit
+      repeat_unit = (repeat_unit)? null: 'days'
+
+      setItems(
+        prev =>
+          prev.map(
+            (item, i) => i === index ? { ...item, repeat_unit: repeat_unit, repeat_interval: null} : item
+        )
+      )
+    }
+
+    async function onClickDone(id: number) {
 
       const res = await fetchAPI('todo/api', {
         method: 'POST',
@@ -146,7 +161,7 @@ export default function Page() {
         {Items.map((item, i) => (<>
           {item.id === Selected ?
             <form key={item.id} onSubmit={handleSave} className={styles.item}>
-              <Checkbox className={styles.check} checked={!(!item.done)} onClick={(e) => onClickDone(e, item.id)}/>
+              <Checkbox className={styles.check} checked={!(!item.done)} onClick={() => onClickDone(item.id)}/>
               <input type='number' name='id' value={item.id} hidden />
               <input className={styles.name} type='text' name='name' value={item.name} onChange={e => handleChange(e, i)} />
               <div className={styles.body}>
@@ -155,15 +170,31 @@ export default function Page() {
                   value={item.memo} onChange={e => handleChange(e, i)}
                 />
                 <div className={styles.date}>
-                  { item?.date_string &&
+                  { item?.date_string &&<>
                   <input type='date' name='date_string' value={item.date_string} onChange={e => handleChange(e, i)} />
-                  }
-                  { item?.time_string &&
                     <input type='time' name='time_string' value={item.time_string} onChange={e => handleChange(e, i)} />
-                  }
+                    </>}
+                </div>
+                <div className={styles.repeat}>
+                  { item?.repeat_unit &&<>
+                    <input type='number' name='repeat_interval'
+                      value={item.repeat_interval} onChange={e => handleChange(e, i)}
+                      placeholder='repeat...'
+                    />
+                    <select name='repeat_unit'
+                      value={item.repeat_unit} onChange={e => handleChange(e, i)}
+                      >
+                      {RepeatUnitArray?.map(unit => (
+                        <option key={unit} value={unit}>
+                          {unit}
+                        </option>
+                      ))}
+                    </select>
+                  </>}
                 </div>
                 <div className={styles.btns}>
                   <Button type='calendar' onClick={() => onClickDate(i)} />
+                  <Button type='repeat' onClick={() => onClickRepeat(i)} />
                 </div>
                 <input type='submit' value='Save'/>
               </div>
@@ -177,9 +208,14 @@ export default function Page() {
                 `}
               onClick={() => onClickItem(i, item.id)}
             >
-              <Checkbox className={styles.check} checked={!(!item.done)} onClick={(e) => onClickDone(e, item.id)}/>
+              <Checkbox className={styles.check} checked={!(!item.done)} onClick={() => onClickDone(item.id)}/>
               <div>
-                <div className={styles.name}>{item.name}</div>
+                <div className={styles.name}>
+                  {item.name}
+                  <span className={styles.icons}>
+                    {item?.repeat_interval && <Button type='repeat' />}
+                  </span>
+                </div>
                 <div className={styles.info}>
                   {item?.date &&
                   <div className={styles.date}>

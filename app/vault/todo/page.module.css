@@ -28,11 +28,12 @@ form.item {
   border-radius: 0.5em;
   padding: 0.25em;
 }
-form.item input {
+form.item input, form.item select {
   background: none;
+  border: none;
 }
 
-form .ckeck {
+form .check {
   grid-area: lh;
   align-self: center;
 }
@@ -46,6 +47,9 @@ form .body {
   flex-direction: column;
 }
 
+form.item input[name=repeat_interval] {
+  width: 3em;
+}
 .btns {
   margin-left: auto;
 }
@@ -65,4 +69,16 @@ form .body {
   margin-left: 1ch;
   font-size: 0.85em;
   color: var(--color-lightgray);
+}
+.icons {
+  margin-left: 1ch;
+}
+
+.icons div {
+  width: 0.85em;
+  height: 0.85em;
+}
+.icons svg path {
+  stroke-width: 1 !important;
+  stroke: var(--color-lightgray) !important;
 }
