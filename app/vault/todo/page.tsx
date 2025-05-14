@@ -6,7 +6,7 @@ import styles from './page.module.css'
 import fetchAPI from '@/app/utils/api'
 import { TodoType } from '@/app/types/todo'
 import { createHandleFormArrayChange } from '@/app/utils/form'
-import { getToday, timestampToDateTime, dateTimeToTimestamp } from '@/app/utils/date'
+import { getToday, timestampToDateTime, dateTimeToTimestamp, dateFormat } from '@/app/utils/date'
 import Button from '@/app/components/button'
 import Checkbox from '@/app/components/checkbox'
 
@@ -178,7 +178,21 @@ export default function Page() {
               onClick={() => onClickItem(i, item.id)}
             >
               <Checkbox className={styles.check} checked={!(!item.done)} onClick={(e) => onClickDone(e, item.id)}/>
-              <div className={styles.name}>{item.name}</div>
+              <div>
+                <div className={styles.name}>{item.name}</div>
+                <div className={styles.info}>
+                  {item?.date &&
+                  <div className={styles.date}>
+                    {dateFormat(item.date, {month: '2-digit', day: '2-digit'})}
+                  </div>
+                  }
+                  {item?.memo &&
+                  <div className={styles.memo}>
+                    {item.memo}
+                  </div>
+                  }
+                </div>
+              </div>
             </div>
           }
         </>))}

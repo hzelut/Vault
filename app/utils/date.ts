@@ -53,3 +53,9 @@ export function shiftDate( timestamp: number, options?: ShifOptions): number {
 
   return Math.floor(date.getTime() / 1000)
 }
+
+export function dateFormat(timestamp: number, options: Intl.DateTimeFormatOptions) {
+  const date = new Date(timestamp*1000)
+
+  return date.toLocaleString('en-GB', options)
+}

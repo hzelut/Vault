@@ -50,11 +50,19 @@ form .body {
   margin-left: auto;
 }
 
-.outdated {
+.outdated .name {
   font-weight: bold;
   color: var(--color-red);
 }
 
 .done {
+  color: var(--color-lightgray);
+}
+
+.info {
+  display: flex;
+  gap: 1ch;
+  margin-left: 1ch;
+  font-size: 0.85em;
   color: var(--color-lightgray);
 }
