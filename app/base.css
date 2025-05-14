@@ -93,3 +93,6 @@ input::placeholder, textarea::placeholder {
   display: none;
 }
 
+.flexbox {
+  display: flex;
+}

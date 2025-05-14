@@ -27,8 +27,7 @@ export async function create(name: string): Promise<number|null> {
 export async function remove(id: number): Promise<boolean> {
   try {
     const res = await fetchQuery(
-      `DELETE ${types.TABLE} WHERE id=? RETURNING id`
-      [id]
+      `DELETE FROM ${types.TABLE} WHERE id=? RETURNING id`, [id]
     ) as Array<{id: number}>
 
     if(res.length !== 1 && res[0].id !== id)

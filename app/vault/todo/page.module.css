@@ -40,6 +40,7 @@ form .check {
 form .name {
   grid-area: rh;
   align-self: center;
+  flex: 1;
 }
 form .body {
   grid-area: body;
@@ -81,4 +82,16 @@ form.item input[name=repeat_interval] {
 .icons svg path {
   stroke-width: 1 !important;
   stroke: var(--color-lightgray) !important;
+}
+
+.close {
+  width: 1em !important;
+  height: 1em !important;
+}
+
+.saveBtn {
+  flex: 3;
+}
+.deleteBtn {
+  flex: 1;
 }

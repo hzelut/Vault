@@ -53,6 +53,14 @@ async function update(form: HTMLFormElement) {
   })
 }
 
+async function remove(id: number) {
+  const res = await fetchAPI('todo/api', {
+    method: 'DELETE',
+    data: {id: id}
+  })
+  return (res?.id == id)
+}
+
 export default function Page() {
   const [Inbox, setInbox] = useState<Array<TodoType>>()
   const [Today, setToday] = useState<Array<TodoType>>()
@@ -88,6 +96,15 @@ export default function Page() {
     e.preventDefault()
     const form = e.currentTarget as HTMLFormElement
     await update(form)
+  }
+
+  async function handleDelete(e: React.FormEvent, id: number) {
+    e.preventDefault()
+    if(confirm('DELETE?!?!?!')) {
+      if(await remove(id)) {
+        setSelected(0)
+      }
+    }
   }
 
   function itemsView(
@@ -164,7 +181,10 @@ export default function Page() {
             <form key={item.id} onSubmit={handleSave} className={styles.item}>
               <Checkbox className={styles.check} checked={!(!item.done)} onClick={(e) => onClickDone(e, item.id)}/>
               <input type='number' name='id' value={item.id} hidden />
-              <input className={styles.name} type='text' name='name' value={item.name} onChange={e => handleChange(e, i)} />
+              <div className='flexbox'>
+                <input className={styles.name} type='text' name='name' value={item.name} onChange={e => handleChange(e, i)} />
+                <Button type='close' className={styles.close} onClick={() => setSelected(0)}/>
+              </div>
               <div className={styles.body}>
                 <input type='text' name='memo'
                   placeholder='memo...'
@@ -197,7 +217,12 @@ export default function Page() {
                   <Button type='calendar' onClick={() => onClickDate(i)} />
                   <Button type='repeat' onClick={() => onClickRepeat(i)} />
                 </div>
-                <input type='submit' value='Save'/>
+                <div className='flexbox'>
+                  <input className={styles.saveBtn} type='submit' value='Save'/>
+                  <input className={styles.deleteBtn} type='button' value='Delete'
+                    onClick={(e) => handleDelete(e, item.id)}
+                  />
+                </div>
               </div>
             </form>
             :
