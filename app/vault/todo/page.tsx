@@ -139,7 +139,8 @@ export default function Page() {
       )
     }
 
-    async function onClickDone(id: number) {
+    async function onClickDone(e: React.FormEvent, id: number) {
+      e.stopPropagation()
 
       const res = await fetchAPI('todo/api', {
         method: 'POST',
@@ -161,7 +162,7 @@ export default function Page() {
         {Items.map((item, i) => (<>
           {item.id === Selected ?
             <form key={item.id} onSubmit={handleSave} className={styles.item}>
-              <Checkbox className={styles.check} checked={!(!item.done)} onClick={() => onClickDone(item.id)}/>
+              <Checkbox className={styles.check} checked={!(!item.done)} onClick={(e) => onClickDone(e, item.id)}/>
               <input type='number' name='id' value={item.id} hidden />
               <input className={styles.name} type='text' name='name' value={item.name} onChange={e => handleChange(e, i)} />
               <div className={styles.body}>
@@ -208,7 +209,7 @@ export default function Page() {
                 `}
               onClick={() => onClickItem(i, item.id)}
             >
-              <Checkbox className={styles.check} checked={!(!item.done)} onClick={() => onClickDone(item.id)}/>
+              <Checkbox className={styles.check} checked={!(!item.done)} onClick={(e) => onClickDone(e, item.id)}/>
               <div>
                 <div className={styles.name}>
                   {item.name}
@@ -239,7 +240,7 @@ export default function Page() {
   return (
     <div className={styles.page}>
       <form onSubmit={handleNew}>
-        <input type='text' name='name' placeholder='new...' required />
+        <input type='text' name='name' placeholder='new...' required autoFocus />
         <input type='submit' hidden />
       </form>
       {Inbox &&

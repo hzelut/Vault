@@ -101,21 +101,103 @@ export async function gets(category: types.TodoCategory): Promise<Array<types.To
 
 export async function done(id): Promise<number|null> {
   try {
-  const today = getToday()
+    const today = getToday()
 
-  const res = await fetchQuery(
-    `UPDATE ${types.TABLE}
-     SET done = CASE
-      WHEN done IS NULL THEN ?
-      ELSE NULL
-     END
-     WHERE id = ? RETURNING done
-    `, [today, id]
-  ) as Array<{done: number}>
-  if(res.length !== 1)
-    throw new Error('Failed todo update')
+    const items = await fetchQuery(
+      `SELECT * FROM ${types.TABLE} WHERE id = ?`
+  , [id]
+    ) as Array<types.TodoType>
+    if(items.length !== 1)
+      throw new Error(`Failed todo done - Wrong id(${id})`)
 
-  return res[0].done
+    const item = items[0]
+
+    if(item.repeat_interval) {
+      if(item.done) {
+        // find next -> delete
+        const next = await fetchQuery(
+          `SELECT id FROM ${types.TABLE}
+          WHERE name=? AND memo=? AND date=? AND
+          repeat_unit=? AND repeat_interval=?`
+        , [item.name, item.memo, item.date,
+      item.repeat_unit, item.repeat_interval]
+        ) as Array<{id: number}>
+        if(next.length !== 1)
+          throw new Error(`Failed todo done - Not Found next one`)
+        else
+          await fetchQuery(`DELETE FROM ${types.TABLE} WHERE id = ?`, [next[0].id])
+
+        // update done=null
+        const res = await fetchQuery(
+          `UPDATE ${types.TABLE}
+          SET updated_at = ?, done = null
+          WHERE id = ? RETURNING done
+          `, [today, id]
+        ) as Array<{done: number}>
+        if(res.length !== 1)
+          throw new Error('Failed todo done')
+
+        return res[0].done
+      }
+      else {
+        // make options -> make nextDate
+        const options = {}
+        switch(item.repeat_unit) {
+          case 'days':
+            options['days'] = item.repeat_interval
+          break
+          case 'weeks':
+            options['weeks'] = item.repeat_interval
+          break
+          case 'months':
+            options['months'] = item.repeat_interval
+          break
+        }
+        const nextDate = shiftDate((item?.date)? item.date: today, options)
+
+        // done
+        const res = await fetchQuery(
+          `UPDATE ${types.TABLE}
+          SET updated_at = ?, done = ?
+            WHERE id = ? RETURNING done
+          `, [today, today, id]
+        ) as Array<{done: number}>
+        if(res.length !== 1)
+          throw new Error('Failed todo done')
+
+        // create next
+        const newRes = await fetchQuery(
+          `INSERT INTO ${types.TABLE}
+          (name,memo,date,repeat_unit,
+           repeat_interval,created_at,updated_at)
+           VALUES (?,?,?,?,?,?,?) RETURNING id
+           `,
+           [item.name, item.memo, nextDate,
+             item.repeat_unit, item.repeat_interval,
+             today, today
+           ]
+        ) as Array<{id: number}>
+        if(newRes.length !== 1)
+          throw new Error('Failed todo done')
+
+        return res[0].done
+      }
+    }
+    else {
+      const res = await fetchQuery(
+        `UPDATE ${types.TABLE}
+        SET updated_at = ?, done = CASE
+        WHEN done IS NULL THEN ?
+          ELSE NULL
+        END
+        WHERE id = ? RETURNING done
+        `, [today, today, id]
+      ) as Array<{done: number}>
+      if(res.length !== 1)
+        throw new Error('Failed todo done')
+
+      return res[0].done
+    }
   } catch(err) {
     console.error(err)
   }
