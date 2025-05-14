@@ -5,7 +5,7 @@
   display: inline-block;
   width: 1em;
   height: 1em;
-  border: 2px solid var(--color-lightfg);
+  border: 2px solid var(--color-gray);
   border-radius: 0.25em;
 }
 

@@ -55,6 +55,7 @@ export default function Page() {
   const [Today, setToday] = useState<Array<TodoType>>()
   const [Upcomming, setUpcomming] = useState<Array<TodoType>>()
   const [Selected, setSelected] = useState<number>()
+  const today = getToday()
 
   useEffect(() => {
     fetchInbox()
@@ -144,8 +145,8 @@ export default function Page() {
       <div className={styles.items}>
         {Items.map((item, i) => (<>
           {item.id === Selected ?
-            <form className={styles.item} key={item.id} onSubmit={handleSave}>
-              <Checkbox className={styles.done} checked={!(!item.done)} onClick={(e) => onClickDone(e, item.id)}/>
+            <form key={item.id} onSubmit={handleSave} className={styles.item}>
+              <Checkbox className={styles.check} checked={!(!item.done)} onClick={(e) => onClickDone(e, item.id)}/>
               <input type='number' name='id' value={item.id} hidden />
               <input className={styles.name} type='text' name='name' value={item.name} onChange={e => handleChange(e, i)} />
               <div className={styles.body}>
@@ -168,10 +169,15 @@ export default function Page() {
               </div>
             </form>
             :
-            <div className={styles.item} key={item.id}
+            <div key={item.id}
+              className={`
+                ${styles.item}
+                ${(item.date && item?.date < today && styles.outdated)}
+                ${(item.done && styles.done)}
+                `}
               onClick={() => onClickItem(i, item.id)}
             >
-              <Checkbox className={styles.done} checked={!(!item.done)} onClick={(e) => onClickDone(e, item.id)}/>
+              <Checkbox className={styles.check} checked={!(!item.done)} onClick={(e) => onClickDone(e, item.id)}/>
               <div className={styles.name}>{item.name}</div>
             </div>
           }

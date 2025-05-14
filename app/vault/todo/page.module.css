@@ -13,7 +13,7 @@
   margin: 0.5em 0;
 }
 
-.done {
+.check {
   margin-right: 1ch;
 }
 
@@ -32,7 +32,7 @@ form.item input {
   background: none;
 }
 
-form .done {
+form .ckeck {
   grid-area: lh;
   align-self: center;
 }
@@ -48,4 +48,13 @@ form .body {
 
 .btns {
   margin-left: auto;
+}
+
+.outdated {
+  font-weight: bold;
+  color: var(--color-red);
+}
+
+.done {
+  color: var(--color-lightgray);
 }
