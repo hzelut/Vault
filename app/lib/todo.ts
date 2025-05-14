@@ -98,3 +98,27 @@ export async function gets(category: types.TodoCategory): Promise<Array<types.To
   }
   return null
 }
+
+export async function done(id): Promise<number|null> {
+  try {
+  const today = getToday()
+
+  const res = await fetchQuery(
+    `UPDATE ${types.TABLE}
+     SET done = CASE
+      WHEN done IS NULL THEN ?
+      ELSE NULL
+     END
+     WHERE id = ? RETURNING done
+    `, [today, id]
+  ) as Array<{done: number}>
+  if(res.length !== 1)
+    throw new Error('Failed todo update')
+
+  return res[0].done
+  } catch(err) {
+    console.error(err)
+  }
+
+  return 0
+}
