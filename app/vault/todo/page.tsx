@@ -8,6 +8,7 @@ import { TodoType } from '@/app/types/todo'
 import { createHandleFormArrayChange } from '@/app/utils/form'
 import { getToday, timestampToDateTime, dateTimeToTimestamp } from '@/app/utils/date'
 import Button from '@/app/components/button'
+import Checkbox from '@/app/components/checkbox'
 
 async function create(form: HTMLFormElement) {
   const name = (form.elements.namedItem('name') as HTMLInputElement)?.value
@@ -44,7 +45,7 @@ async function update(form: HTMLFormElement) {
     delete item.memo
 
   await fetchAPI('todo/api', {
-    method: 'POST',
+    method: 'PATCH',
     data: item
   })
 }
@@ -121,34 +122,56 @@ export default function Page() {
       )
     }
 
+    async function onClickDone(e: React.FormEvent, id: number) {
+      e.stopPropagation()
+
+      const res = await fetchAPI('todo/api', {
+        method: 'POST',
+        data: {id: id}
+      })
+
+      setItems(
+        prev =>
+          prev.map(
+            (item) => item.id === id ? { ...item, done: res.done} : item
+        )
+      )
+
+
+    }
+
     return (
       <div className={styles.items}>
         {Items.map((item, i) => (<>
           {item.id === Selected ?
             <form className={styles.item} key={item.id} onSubmit={handleSave}>
+              <Checkbox className={styles.done} checked={!(!item.done)} onClick={(e) => onClickDone(e, item.id)}/>
               <input type='number' name='id' value={item.id} hidden />
-              <input type='text' name='name' value={item.name} onChange={e => handleChange(e, i)} />
-              <input type='text' name='memo'
-                placeholder='memo...'
-                value={item.memo} onChange={e => handleChange(e, i)}
-              />
-              <div className={styles.date}>
-                { item?.date_string &&
-                <input type='date' name='date_string' value={item.date_string} onChange={e => handleChange(e, i)} />
-                }
-                { item?.time_string &&
-                  <input type='time' name='time_string' value={item.time_string} onChange={e => handleChange(e, i)} />
-                }
+              <input className={styles.name} type='text' name='name' value={item.name} onChange={e => handleChange(e, i)} />
+              <div className={styles.body}>
+                <input type='text' name='memo'
+                  placeholder='memo...'
+                  value={item.memo} onChange={e => handleChange(e, i)}
+                />
+                <div className={styles.date}>
+                  { item?.date_string &&
+                  <input type='date' name='date_string' value={item.date_string} onChange={e => handleChange(e, i)} />
+                  }
+                  { item?.time_string &&
+                    <input type='time' name='time_string' value={item.time_string} onChange={e => handleChange(e, i)} />
+                  }
+                </div>
+                <div className={styles.btns}>
+                  <Button type='calendar' onClick={() => onClickDate(i)} />
+                </div>
+                <input type='submit' value='Save'/>
               </div>
-              <div className={styles.btns}>
-                <Button type='calendar' onClick={() => onClickDate(i)} />
-              </div>
-              <input type='submit' value='Save'/>
             </form>
             :
             <div className={styles.item} key={item.id}
               onClick={() => onClickItem(i, item.id)}
             >
+              <Checkbox className={styles.done} checked={!(!item.done)} onClick={(e) => onClickDone(e, item.id)}/>
               <div className={styles.name}>{item.name}</div>
             </div>
           }
