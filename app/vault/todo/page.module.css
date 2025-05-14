@@ -2,11 +2,19 @@
 }
 
 .header {
-  font-size: 1.25em;
+  font-weight: bold;
+  color: var(--color-green);
+  border-bottom: 1px solid var(--color-lightbg);
+  margin: 1em 0 0.5em 0;
 }
 .item {
   width: 80%;
   display: flex;
+  margin: 0.5em 0;
+}
+
+.done {
+  margin-right: 1ch;
 }
 
 form.item {
@@ -19,6 +27,9 @@ form.item {
   border: 1px solid var(--color-lightgray);
   border-radius: 0.5em;
   padding: 0.25em;
+}
+form.item input {
+  background: none;
 }
 
 form .done {
@@ -37,12 +48,4 @@ form .body {
 
 .btns {
   margin-left: auto;
-}
-
-.item input {
-  background: none;
-}
-
-.done {
-  margin-right: 1ch;
 }
