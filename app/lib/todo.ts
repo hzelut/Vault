@@ -1,6 +1,7 @@
 import fetchQuery from '@/app/lib/database'
 import * as types from '@/app/types/todo'
 import { getNow, getToday, shiftDate } from '@/app/utils/date'
+import * as common from './common'
 
 export async function create(name: string): Promise<number|null> {
   try {
@@ -25,19 +26,7 @@ export async function create(name: string): Promise<number|null> {
 }
 
 export async function remove(id: number): Promise<boolean> {
-  try {
-    const res = await fetchQuery(
-      `DELETE FROM ${types.TABLE} WHERE id=? RETURNING id`, [id]
-    ) as Array<{id: number}>
-
-    if(res.length !== 1 && res[0].id !== id)
-      throw new Error('Failed note remove')
-
-    return true
-  } catch(err) {
-    console.error(err)
-  }
-  return false
+  return await common.remove(types.TABLE, id)
 }
 
 export async function update(item: types.TodoType): Promise<boolean> {
