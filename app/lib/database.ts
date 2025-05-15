@@ -42,8 +42,8 @@ export default async function fetchQuery(query: string, args: Array<unknown> = [
 
 export async function updateQuery(
   table: string,
-  item: Record<string, 'number'|'string'|null>,
-  where: Record<string, 'number'|'string'|null>,
+  item: Record<string, number|string|null>,
+  where: Record<string, number|string|null>,
   exclude: string[] = ['id', 'created_at', 'updated_at']
 ): Promise<number|null> {
   try {
