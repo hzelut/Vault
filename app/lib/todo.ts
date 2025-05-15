@@ -62,12 +62,21 @@ export async function update(item: types.TodoType): Promise<boolean> {
   return false
 }
 
-export async function gets(category: types.TodoCategory): Promise<Array<types.TodoType>|null> {
+export async function gets(category: types.TodoCategory): Promise<Array<types.TodoType>|types.TodoAll|null> {
   try {
     let query = `SELECT * FROM ${types.TABLE} `
     const args = []
 
-    if(category === 'inbox') {
+    if(category === 'all') {
+      const [inbox, today, upcomming] = await Promise.all([
+        await gets('inbox'),
+        await gets('today'),
+        await gets('upcomming')
+      ])
+
+      return {inbox:inbox, today:today, upcomming:upcomming} as types.TodoAll
+    }
+    else if(category === 'inbox') {
       query += 'WHERE done IS NULL AND date IS NULL'
     }
     else if(category === 'done') {

@@ -18,3 +18,9 @@ export type TodoType = {
   created_at: number
   updated_at: number
 }
+
+export type TodoAll = {
+  inbox: Array<TodoType>
+  today: Array<TodoType>
+  upcomming: Array<TodoType>
+}
