@@ -35,6 +35,11 @@ export function getToday() {
   return Math.floor(date.getTime() / 1000)
 }
 
+export function getNow() {
+  const date = new Date()
+  return Math.floor(date.getTime() / 1000)
+}
+
 type ShifOptions = {
   days?: number
   weeks?: number

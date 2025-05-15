@@ -4,7 +4,7 @@ import styles from './items.module.css'
 import fetchAPI from '@/app/utils/api'
 import { TodoType, RepeatUnitArray } from '@/app/types/todo'
 import { createHandleFormArrayChange } from '@/app/utils/form'
-import { getToday, timestampToDateTime, dateFormat } from '@/app/utils/date'
+import { getToday, getNow, timestampToDateTime, dateFormat } from '@/app/utils/date'
 import Button from '@/app/components/button'
 import Checkbox from '@/app/components/checkbox'
 
@@ -20,6 +20,7 @@ export default function itemsView(
   const [Selected, setSelected] = selectState
   const handleChange = createHandleFormArrayChange(setItems)
   const today = getToday()
+  const now = getNow()
 
   function onClickItem(index: number, id: number) {
     const item: TodoType = Items[index]
@@ -39,7 +40,7 @@ export default function itemsView(
     let time = null
 
     if(!Items[index]?.time_string) {
-      ({date: date, time: time} = timestampToDateTime(getToday()))
+      ({date: date, time: time} = timestampToDateTime(today))
     }
 
     setItems(
@@ -135,7 +136,7 @@ export default function itemsView(
           <div key={item.id}
             className={`
               ${styles.item}
-              ${(item.date && item?.date < today && styles.outdated)}
+              ${(item.date && item?.date <= now && styles.outdated)}
               ${(item.done && styles.done)}
               `}
             onClick={() => onClickItem(i, item.id)}
