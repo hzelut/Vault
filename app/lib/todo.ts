@@ -1,17 +1,17 @@
 import fetchQuery from '@/app/lib/database'
 import * as types from '@/app/types/todo'
-import { getToday, shiftDate } from '@/app/utils/date'
+import { getNow, getToday, shiftDate } from '@/app/utils/date'
 
 export async function create(name: string): Promise<number|null> {
   try {
     if(name === '')
       throw new Error('Empty todo name')
 
-    const today = Math.floor(new Date().getTime() / 1000)
+    const now = getNow()
     const res = await fetchQuery(
       `INSERT INTO ${types.TABLE} (name,created_at,updated_at)
       VALUES (?,?,?) RETURNING id`,
-      [name, today, today]
+      [name, now, now]
     ) as Array<{id: number}>
 
     if(res.length !== 1)
@@ -42,14 +42,14 @@ export async function remove(id: number): Promise<boolean> {
 
 export async function update(item: types.TodoType): Promise<boolean> {
   try {
-    const today = Math.floor(new Date().getTime() / 1000)
+    const now = getNow()
     const res = await fetchQuery(
       `UPDATE ${types.TABLE}
       SET name=?,memo=?,done=?,date=?,repeat_interval=?,repeat_unit=?,updated_at=?
       WHERE id=? RETURNING id`,
       [item.name, item.memo, item.done, item.date,
         item.repeat_interval, item.repeat_unit,
-        today, item.id]
+        now, item.id]
     ) as Array<{id: number}>
 
     if(res.length !== 1 && res[0].id !== item.id)
@@ -109,6 +109,7 @@ export async function gets(category: types.TodoCategory): Promise<Array<types.To
 
 export async function done(id): Promise<number|null> {
   try {
+    const now = getNow()
     const today = getToday()
 
     const items = await fetchQuery(
@@ -140,7 +141,7 @@ export async function done(id): Promise<number|null> {
           `UPDATE ${types.TABLE}
           SET updated_at = ?, done = null
           WHERE id = ? RETURNING done
-          `, [today, id]
+          `, [now, id]
         ) as Array<{done: number}>
         if(res.length !== 1)
           throw new Error('Failed todo done')
@@ -168,7 +169,7 @@ export async function done(id): Promise<number|null> {
           `UPDATE ${types.TABLE}
           SET updated_at = ?, done = ?
             WHERE id = ? RETURNING done
-          `, [today, today, id]
+          `, [now, now, id]
         ) as Array<{done: number}>
         if(res.length !== 1)
           throw new Error('Failed todo done')
@@ -182,7 +183,7 @@ export async function done(id): Promise<number|null> {
            `,
            [item.name, item.memo, nextDate,
              item.repeat_unit, item.repeat_interval,
-             today, today
+             now, now
            ]
         ) as Array<{id: number}>
         if(newRes.length !== 1)
@@ -199,7 +200,7 @@ export async function done(id): Promise<number|null> {
           ELSE NULL
         END
         WHERE id = ? RETURNING done
-        `, [today, today, id]
+        `, [now, now, id]
       ) as Array<{done: number}>
       if(res.length !== 1)
         throw new Error('Failed todo done')
