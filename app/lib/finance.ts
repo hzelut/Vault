@@ -66,12 +66,12 @@ export async function update(item: types.FinanceType): Promise<boolean> {
 
 export async function getsMonthly(year: number, month: number): Promise<Array<types.FinanceType>> {
   try {
-    const thisMonth = Math.floor((new Date(year, month)).getTime() / 1000)
+    const thisMonth = Math.floor((new Date(year, month-1)).getTime() / 1000)
     const nextMonth = shiftDate(thisMonth, {months: 1})
 
     const res = await fetchQuery(
       `SELECT * FROM ${types.TABLE}
-      WHERE date <= ? AND date > ?`,
+      WHERE date >= ? AND date < ?`,
       [thisMonth, nextMonth]
     ) as Array<types.FinanceType>
 
