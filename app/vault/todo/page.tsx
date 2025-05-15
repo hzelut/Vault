@@ -38,6 +38,7 @@ export default function Page() {
     e.preventDefault()
     const form = e.currentTarget as HTMLFormElement
     await lib.update(form)
+    await fetchAll()
   }
 
   async function handleDelete(e: React.FormEvent, id: number) {
@@ -45,6 +46,7 @@ export default function Page() {
     if(confirm('DELETE?!?!?!')) {
       if(await lib.remove(id)) {
         setSelected(0)
+        await fetchAll()
       }
     }
   }
@@ -64,18 +66,20 @@ export default function Page() {
         <div className={styles.header}>
           Today
         </div>
-        {Today ?
+        {Today?.length > 0 ?
           <>{itemsView([Today, setToday], [Selected, setSelected], handleDelete, handleSave)}</>
         :
         <div>All done!!</div>
         }
       </div>
+      {Upcomming?.length > 0 &&
       <div className={styles.upcomming}>
         <div className={styles.header}>
           Upcomming
         </div>
         {itemsView([Upcomming, setUpcomming], [Selected, setSelected], handleDelete, handleSave)}
       </div>
+      }
     </div>
   )
 }
