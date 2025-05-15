@@ -54,7 +54,7 @@ export function shiftDate( timestamp: number, options?: ShifOptions): number {
   if(options?.weeks)
     date.setDate(date.getDate() + options.weeks*7)
   if(options?.months)
-    date.setDate(date.getMonth() + options.months)
+    date.setMonth(date.getMonth() + options.months)
 
   return Math.floor(date.getTime() / 1000)
 }
