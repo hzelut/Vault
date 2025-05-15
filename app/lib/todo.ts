@@ -1,7 +1,6 @@
-import fetchQuery from '@/app/lib/database'
+import fetchQuery, { updateQuery, removeQuery } from '@/app/lib/database'
 import * as types from '@/app/types/todo'
 import { getNow, getToday, shiftDate } from '@/app/utils/date'
-import * as common from './common'
 
 export async function create(name: string): Promise<number|null> {
   try {
@@ -26,29 +25,12 @@ export async function create(name: string): Promise<number|null> {
 }
 
 export async function remove(id: number): Promise<boolean> {
-  return await common.remove(types.TABLE, id)
+  return await removeQuery(types.TABLE, id)
 }
 
 export async function update(item: types.TodoType): Promise<boolean> {
-  try {
-    const now = getNow()
-    const res = await fetchQuery(
-      `UPDATE ${types.TABLE}
-      SET name=?,memo=?,done=?,date=?,repeat_interval=?,repeat_unit=?,updated_at=?
-      WHERE id=? RETURNING id`,
-      [item.name, item.memo, item.done, item.date,
-        item.repeat_interval, item.repeat_unit,
-        now, item.id]
-    ) as Array<{id: number}>
-
-    if(res.length !== 1 && res[0].id !== item.id)
-      throw new Error('Failed todo update')
-
-    return true
-  } catch(err) {
-    console.error(err)
-  }
-  return false
+  const res = await updateQuery(types.TABLE, item, {id: item.id})
+  return (res === item.id)
 }
 
 export async function gets(category: types.TodoCategory): Promise<Array<types.TodoType>|types.TodoAll|null> {
