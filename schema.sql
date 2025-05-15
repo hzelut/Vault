@@ -21,8 +21,8 @@ CREATE TABLE IF NOT EXISTS finances (
   id INTEGER PRIMARY KEY,
   category TEXT NOT NULL,
   amount INTEGER NOT NULL,
+  date INTEGER NOT NULL,
   memo TEXT,
-  date INTEGER,
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL
 );
