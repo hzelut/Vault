@@ -1,6 +1,6 @@
 'use client'
 
-import styles from './page.module.css'
+import styles from './items.module.css'
 import fetchAPI from '@/app/utils/api'
 import { TodoType, RepeatUnitArray } from '@/app/types/todo'
 import { createHandleFormArrayChange } from '@/app/utils/form'
