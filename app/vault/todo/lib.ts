@@ -15,10 +15,14 @@ export async function create(form: HTMLFormElement) {
     form.reset()
 }
 
-export async function gets(action: string): Promise<Array<TodoType>|TodoAll> {
+export async function gets(action: string, isShowUpcomming?: boolean): Promise<Array<TodoType>|TodoAll> {
+  const params = {a: action}
+  if(isShowUpcomming)
+    params['u'] = '1'
+
   const res = await fetchAPI('todo/api', {
     method: 'GET',
-    params: {a: action}
+    params
   })
 
   return res?.data

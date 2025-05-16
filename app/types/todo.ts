@@ -22,5 +22,5 @@ export type TodoType = {
 export type TodoAll = {
   inbox: Array<TodoType>
   today: Array<TodoType>
-  upcomming: Array<TodoType>
+  upcomming?: Array<TodoType>
 }

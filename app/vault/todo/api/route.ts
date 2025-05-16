@@ -5,7 +5,8 @@ import { TodoType, TodoCategory } from '@/app/types/todo'
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const action = searchParams.get('a') as TodoCategory
-  const data = await gets(action)
+  const upcomming = searchParams.get('u') ?? undefined
+  const data = await gets(action, upcomming)
 
   return NextResponse.json({data: data})
 }

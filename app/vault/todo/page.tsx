@@ -12,13 +12,14 @@ export default function Page() {
   const [Today, setToday] = useState<Array<TodoType>>()
   const [Upcomming, setUpcomming] = useState<Array<TodoType>>()
   const [Selected, setSelected] = useState<number>()
+  const [isShowUpcomming, setIsShowUpcomming] = useState(false)
 
   useEffect(() => {
     fetchAll()
-  }, [])
+  }, [isShowUpcomming])
 
   async function fetchAll() {
-    const res = await lib.gets('all') as TodoAll
+    const res = await lib.gets('all', isShowUpcomming) as TodoAll
     setInbox(res.inbox)
     setToday(res.today)
     setUpcomming(res.upcomming)
@@ -72,14 +73,16 @@ export default function Page() {
         <div>All done!!</div>
         }
       </div>
-      {Upcomming?.length > 0 &&
-      <div className={styles.upcomming}>
+      <div className={styles.upcomming}
+        onClick={() => setIsShowUpcomming(prev => !prev)}
+      >
         <div className={styles.header}>
           Upcomming
         </div>
-        {itemsView([Upcomming, setUpcomming], [Selected, setSelected], handleDelete, handleSave)}
+        {Upcomming?.length > 0 && <>
+          {itemsView([Upcomming, setUpcomming], [Selected, setSelected], handleDelete, handleSave)}
+        </>}
       </div>
-      }
     </div>
   )
 }
