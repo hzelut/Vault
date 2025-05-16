@@ -10,5 +10,43 @@
 .month {
   font-weight: bold;
   font-size: 1.25em;
+  color: var(--color-blue);
+}
+
+
+.groupHeader {
+  border-bottom: 1px solid var(--color-lightbg);
+  margin: 1em 0 0.5em 0;
+}
+
+.groupHeader, .items {
+  padding: 0 10%;
+}
+
+.category {
+  font-weight: bold;
   color: var(--color-green);
+  flex: 1;
+}
+.category::first-letter {
+  text-transform: uppercase;
+}
+.totalAmount {
+  text-align: right;
+}
+
+.item {
+  gap: 1em;
+}
+
+.date {
+  flex: 1;
+}
+.amount {
+  flex: 1;
+  text-align: right;
+}
+
+.memo {
+  flex: 2;
 }

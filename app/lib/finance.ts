@@ -64,7 +64,7 @@ export async function update(item: types.FinanceType): Promise<boolean> {
   return (res === item.id)
 }
 
-export async function getsMonthly(year: number, month: number): Promise<Array<types.FinanceType>> {
+export async function getsMonthly(year: number, month: number): Promise<Array<types.FinanceMonthly>> {
   try {
     const thisMonth = Math.floor((new Date(year, month-1)).getTime() / 1000)
     const nextMonth = shiftDate(thisMonth, {months: 1})
@@ -75,7 +75,18 @@ export async function getsMonthly(year: number, month: number): Promise<Array<ty
       [thisMonth, nextMonth]
     ) as Array<types.FinanceType>
 
-    return res
+    // Grouping
+    const map = new Map()
+    res.forEach(item => {
+      if(!map.has(item.category))
+        map.set(item.category, {items: [], amount:0})
+      const group = map.get(item.category)
+      group.items.push(item)
+      group.amount += item.amount
+    })
+    const monthly: Array<types.FinanceMonthly> = Array.from(map, ([category, {items, amount}]) => ({category, items, amount}))
+
+    return monthly
   } catch(err) {
     console.error(err)
   }

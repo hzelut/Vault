@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import styles from './page.module.css'
-import { FinanceType } from '@/app/types/finance'
+import { FinanceMonthly } from '@/app/types/finance'
 import fetchAPI from '@/app/utils/api'
 import { getNow, dateFormat } from '@/app/utils/date'
 
@@ -21,7 +21,7 @@ export default function Page() {
   const [year, setYear] = useState(Number(params.get('y') ?? new Date().getFullYear()))
   const [month, setMonth] = useState(Number(params.get('m') ?? new Date().getMonth()+1))
   const [newDate, setNewDate] = useState(getNow())
-  const [Items, setItems] = useState<Array<FinanceType>>()
+  const [Items, setItems] = useState<Array<FinanceMonthly>>()
 
   useEffect(() => {
     fetchMonthly()
@@ -73,10 +73,34 @@ export default function Page() {
         <input type='submit' hidden />
       </form>
       <div>
-        {Items?.map(item => (
-      <div key={item.id}>
-        {item.category}
-      </div>
+        {Items?.map(group => (
+          <div key={group.category} className={styles.group}>
+            <div className={`flexbox ${styles.groupHeader}`}>
+              <div className={styles.category}>
+                {group.category}
+              </div>
+              <div className={styles.totalAmount}>
+                {group.amount.toLocaleString()}
+              </div>
+            </div>
+            <div className={styles.items}>
+              {group.items?.map(item => (
+                <div key={item.id}
+                  className={`flexbox ${styles.item}`}
+                >
+                  <div className={styles.date}>
+                    {dateFormat(item.date, {day: '2-digit'})}
+                  </div>
+                  <div className={styles.memo}>
+                    {item.memo}
+                  </div>
+                  <div className={styles.amount}>
+                    {item.amount.toLocaleString()}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
     </div>

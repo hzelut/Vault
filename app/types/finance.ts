@@ -3,10 +3,16 @@ export const TABLE_ID = 2
 
 export type FinanceType = {
   id: number
-  category: string,
+  category: string
   amount: number
   date: number
   memo?: string
   created_at: number
   updated_at: number
+}
+
+export type FinanceMonthly = {
+  category: string
+  amount: number
+  items: Array<FinanceType>
 }
