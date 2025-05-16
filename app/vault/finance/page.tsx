@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import styles from './page.module.css'
-import { FinanceMonthly } from '@/app/types/finance'
+import { FinanceMonthly, FinanceType } from '@/app/types/finance'
 import fetchAPI from '@/app/utils/api'
 import { getNow, dateFormat } from '@/app/utils/date'
+import { createHandleFormChange } from '@/app/utils/form'
 
 function makeNewDate(year: number, month: number) {
   const now = new Date()
@@ -22,6 +23,8 @@ export default function Page() {
   const [month, setMonth] = useState(Number(params.get('m') ?? new Date().getMonth()+1))
   const [newDate, setNewDate] = useState(getNow())
   const [Items, setItems] = useState<Array<FinanceMonthly>>()
+  const [selected, setSelected] = useState<FinanceType>()
+  const handleChange = createHandleFormChange(setSelected)
 
   useEffect(() => {
     fetchMonthly()
@@ -55,6 +58,29 @@ export default function Page() {
     }
   }
 
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault()
+    const res = await fetchAPI('finance/api', {
+      method: 'PATCH',
+      data: selected
+    })
+    if(res?.id == selected.id)
+      fetchMonthly()
+  }
+
+  async function handleDel() {
+    if(confirm('DELETE?!?!?!')) {
+      const res = await fetchAPI('finance/api', {
+        method: 'DELETE',
+        data: {id: selected.id}
+      })
+      if(res?.id == selected.id) {
+        setSelected(null)
+        fetchMonthly()
+      }
+    }
+  }
+
   return (
     <div className={styles.page}>
       <div className={`flexbox ${styles.header}`}>
@@ -84,21 +110,45 @@ export default function Page() {
               </div>
             </div>
             <div className={styles.items}>
-              {group.items?.map(item => (
-                <div key={item.id}
-                  className={`flexbox ${styles.item}`}
-                >
-                  <div className={styles.date}>
-                    {dateFormat(item.date, {day: '2-digit'})}
+              {group.items?.map(item => (<>
+                { selected?.id === item.id ?<>
+                  <form className={`flexbox ${styles.item}`} onSubmit={handleSave}>
+                    <input type='text' name='category'
+                      className={styles.date}
+                      value={selected.category} onChange={handleChange} />
+                    <input type='text' name='memo'
+                      className={styles.memo} placeholder='memo...'
+                      value={selected.memo} onChange={handleChange} />
+                    <input type='number' name='amount'
+                      className={styles.amount} autoFocus
+                      value={selected.amount} onChange={handleChange} />
+                    <input type='submit' hidden />
+                  </form>
+                  <div className={`flexbox ${styles.item} ${styles.formBtns}`}>
+                    <input type='button' className={styles.saveBtn} value='Save'
+                      onClick={handleSave}
+                    />
+                    <input type='button' className={styles.deleteBtn} value='Delete'
+                      onClick={handleDel}
+                    />
                   </div>
-                  <div className={styles.memo}>
-                    {item.memo}
+                </>:
+                  <div key={item.id}
+                    onClick={() => setSelected(item)}
+                    className={`flexbox ${styles.item}`}
+                  >
+                    <div className={styles.date}>
+                      {dateFormat(item.date, {day: '2-digit'})}
+                    </div>
+                    <div className={styles.memo}>
+                      {item.memo}
+                    </div>
+                    <div className={styles.amount}>
+                      {item.amount.toLocaleString()}
+                    </div>
                   </div>
-                  <div className={styles.amount}>
-                    {item.amount.toLocaleString()}
-                  </div>
-                </div>
-              ))}
+                }
+              </>))}
             </div>
           </div>
         ))}
