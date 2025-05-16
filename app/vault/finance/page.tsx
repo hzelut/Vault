@@ -7,6 +7,7 @@ import { FinanceMonthly, FinanceType } from '@/app/types/finance'
 import fetchAPI from '@/app/utils/api'
 import { getNow, dateFormat } from '@/app/utils/date'
 import { createHandleFormChange } from '@/app/utils/form'
+import Button from '@/app/components/button'
 
 export default function Page() {
   return (
@@ -101,16 +102,21 @@ function FinancePage() {
 
   return (
     <div className={styles.page}>
-      <div className={`flexbox ${styles.header}`}>
-        <a className={styles.arrow} href={`${pathname}?y=${year}&m=${month-1}`} >
-          {'<<'}
-        </a>
-        <div className={styles.month}>
-          {dateFormat(newDate, {year: 'numeric', month: 'long'})}
+        <div className={`flexbox ${styles.headerWrap}`}>
+        <div className={`flexbox ${styles.header}`}>
+          <a className={styles.arrow} href={`${pathname}?y=${year}&m=${month-1}`} >
+            {'<<'}
+          </a>
+          <div className={styles.month}>
+            {dateFormat(newDate, {year: 'numeric', month: 'long'})}
+          </div>
+          <a className={styles.arrow} href={`${pathname}?y=${year}&m=${month+1}`} >
+            {'>>'}
+          </a>
         </div>
-        <a className={styles.arrow} href={`${pathname}?y=${year}&m=${month+1}`} >
-          {'>>'}
-        </a>
+          <a href='budget' >
+        <Button type='setting' className={styles.settingBtn} />
+          </a>
       </div>
       <form onSubmit={handleNew}>
         <input type='text' name='query' placeholder='category amount [memo]' required autoFocus />

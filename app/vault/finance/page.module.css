@@ -1,6 +1,15 @@
+.headerWrap {
+  justify-content: space-between;
+  align-items: center;
+}
 .header {
   justify-content: center;
+  flex: 1;
+}
+.settingBtn {
   align-items: center;
+  width: 1em !important;
+  height: 1em !important;
 }
 
 .month, .arrow {
