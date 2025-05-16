@@ -92,3 +92,23 @@ export async function getsMonthly(year: number, month: number): Promise<Array<ty
   }
   return null
 }
+
+export async function getsCategories(year: number, month: number): Promise<Array<{category: string}>> {
+  try {
+    const thisMonth = Math.floor((new Date(year, month-1)).getTime() / 1000)
+    const nextMonth = shiftDate(thisMonth, {months: 1})
+
+    const res = await fetchQuery(
+      `SELECT category FROM ${types.TABLE}
+      WHERE date >= ? AND date < ?
+        GROUP BY category
+        `,
+      [thisMonth, nextMonth]
+    ) as Array<{category: string}>
+
+    return res
+  } catch(err) {
+    console.error(err)
+  }
+  return null
+}

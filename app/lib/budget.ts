@@ -1,5 +1,7 @@
 import * as types from '@/app/types/budget'
 import fetchQuery, { updateQuery, removeQuery } from '@/app/lib/database'
+import { getNow, shiftDate } from '@/app/utils/date'
+import { getsCategories } from '@/app/lib/finance'
 
 export async function remove(id: number): Promise<boolean> {
   return await removeQuery(types.TABLE, id)
@@ -10,14 +12,40 @@ export async function update(item: types.BudgetType): Promise<boolean> {
   return (res === item.id)
 }
 
+async function getUnbudges() {
+  try {
+    const date = new Date()
+    const year = date.getFullYear()
+    const month = date.getMonth()+1
+
+    const res = await getsCategories(year, month)
+    console.log(res)
+  } catch(err) {
+    console.error(err)
+  }
+
+  return null
+}
+
 export async function gets(): Promise<Array<types.BudgetType>> {
   try {
     const res = await fetchQuery(
-      `SELECT * FROM ${types.TABLE}`,
+      `SELECT * FROM ${types.TABLE} ORDER BY amount ASC`,
       []
     ) as Array<types.BudgetType>
 
-    return res
+    const date = new Date()
+    const year = date.getFullYear()
+    const month = date.getMonth()+1
+    const categories = await getsCategories(year, month)
+    const amountMap = new Map(res.map(item => [item.category, item.amount]))
+
+    const budgets = categories.map(item => ({
+      category: item.category,
+      amount: amountMap.get(item.category) ?? 0
+    })) as Array<types.BudgetType>
+
+    return budgets
   } catch(err) {
     console.error(err)
   }
