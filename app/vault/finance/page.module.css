@@ -1,0 +1,14 @@
+.header {
+  justify-content: center;
+  align-items: center;
+}
+
+.month, .arrow {
+  padding: 0.5em;
+}
+
+.month {
+  font-weight: bold;
+  font-size: 1.25em;
+  color: var(--color-green);
+}
