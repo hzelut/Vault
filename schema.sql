@@ -28,7 +28,8 @@ CREATE TABLE IF NOT EXISTS finances (
 );
 
 CREATE TABLE IF NOT EXISTS budgets (
-  category TEXT PRIMARY KEY,
+  id INTEGER PRIMARY KEY,
+  category TEXT NOT NULL,
   amount INTEGER NOT NULL
 );
 
