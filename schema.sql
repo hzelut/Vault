@@ -28,14 +28,8 @@ CREATE TABLE IF NOT EXISTS finances (
 );
 
 CREATE TABLE IF NOT EXISTS budgets (
-  id INTEGER PRIMARY KEY,
-  category TEXT NOT NULL,
-  amount INTEGER NOT NULL,
-  start_date INTEGER NOT NULL,
-  end_date INTEGER NOT NULL,
-  memo TEXT,
-  created_at INTEGER NOT NULL,
-  updated_at INTEGER NOT NULL
+  category TEXT PRIMARY KEY,
+  amount INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS notes (
