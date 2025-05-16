@@ -33,7 +33,7 @@ export async function update(item: types.TodoType): Promise<boolean> {
   return (res === item.id)
 }
 
-export async function gets(category: types.TodoCategory, isShowUpcomming?: any): Promise<Array<types.TodoType>|types.TodoAll|null> {
+export async function gets(category: types.TodoCategory, isShowUpcomming?: string): Promise<Array<types.TodoType>|types.TodoAll|null> {
   try {
     let query = `SELECT * FROM ${types.TABLE} `
     const args = []

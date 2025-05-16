@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import styles from './page.module.css'
 import { FinanceMonthly, FinanceType } from '@/app/types/finance'
@@ -8,37 +8,55 @@ import fetchAPI from '@/app/utils/api'
 import { getNow, dateFormat } from '@/app/utils/date'
 import { createHandleFormChange } from '@/app/utils/form'
 
+export default function Page() {
+  return (
+    <Suspense>
+      <FinancePage />
+    </Suspense>
+  )
+}
+
 function makeNewDate(year: number, month: number) {
   const now = new Date()
   const cur = new Date(year, month-1)
-  let time = (now.getMonth() == cur.getMonth())? now.getTime(): cur.getTime()
+  const time = (now.getMonth() == cur.getMonth())? now.getTime(): cur.getTime()
 
   return Math.floor(time/1000)
 }
 
-export default function Page() {
+async function fetchData(year, month) {
+  return await fetchAPI('finance/api', {
+    method: 'GET',
+    params: {y: year, m: month}
+  })
+}
+
+function FinancePage() {
   const params = useSearchParams()
   const pathname = usePathname()
-  const [year, setYear] = useState(Number(params.get('y') ?? new Date().getFullYear()))
-  const [month, setMonth] = useState(Number(params.get('m') ?? new Date().getMonth()+1))
+  const [year, setYear] = useState(null)
+  const [month, setMonth] = useState(null)
   const [newDate, setNewDate] = useState(getNow())
   const [Items, setItems] = useState<Array<FinanceMonthly>>()
   const [selected, setSelected] = useState<FinanceType>()
   const handleChange = createHandleFormChange(setSelected)
 
   useEffect(() => {
-    fetchMonthly()
-  }, [])
+    setYear(Number(params.get('y') ?? new Date().getFullYear()))
+    setMonth(Number(params.get('m') ?? new Date().getMonth()+1))
+  }, [params])
+
+  useEffect(() => {
+    if(year && month)
+      fetchMonthly(year, month)
+  }, [year, month])
 
   useEffect(() => {
     setNewDate(makeNewDate(year, month))
   }, [year, month])
 
-  async function fetchMonthly() {
-    const res = await fetchAPI('finance/api', {
-      method: 'GET',
-      params: {y: year, m: month}
-    })
+  async function fetchMonthly(year, month) {
+    const res = await fetchData(year, month)
     if(res.data)
       setItems(res.data)
   }
@@ -54,7 +72,7 @@ export default function Page() {
     })
     if(res?.id > 0) {
       form.reset()
-      await fetchMonthly()
+      await fetchMonthly(year, month)
     }
   }
 
@@ -65,7 +83,7 @@ export default function Page() {
       data: selected
     })
     if(res?.id == selected.id)
-      fetchMonthly()
+      await fetchMonthly(year, month)
   }
 
   async function handleDel() {
@@ -76,7 +94,7 @@ export default function Page() {
       })
       if(res?.id == selected.id) {
         setSelected(null)
-        fetchMonthly()
+        await fetchMonthly(year, month)
       }
     }
   }

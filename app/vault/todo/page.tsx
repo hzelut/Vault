@@ -15,11 +15,11 @@ export default function Page() {
   const [isShowUpcomming, setIsShowUpcomming] = useState(false)
 
   useEffect(() => {
-    fetchAll()
+    fetchAll(isShowUpcomming)
   }, [isShowUpcomming])
 
-  async function fetchAll() {
-    const res = await lib.gets('all', isShowUpcomming) as TodoAll
+  async function fetchAll(showUpcommint: boolean) {
+    const res = await lib.gets('all', showUpcommint) as TodoAll
     setInbox(res.inbox)
     setToday(res.today)
     setUpcomming(res.upcomming)
@@ -39,7 +39,7 @@ export default function Page() {
     e.preventDefault()
     const form = e.currentTarget as HTMLFormElement
     await lib.update(form)
-    await fetchAll()
+    await fetchAll(isShowUpcomming)
   }
 
   async function handleDelete(e: React.FormEvent, id: number) {
@@ -47,7 +47,7 @@ export default function Page() {
     if(confirm('DELETE?!?!?!')) {
       if(await lib.remove(id)) {
         setSelected(0)
-        await fetchAll()
+        await fetchAll(isShowUpcomming)
       }
     }
   }

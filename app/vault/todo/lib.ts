@@ -58,4 +58,3 @@ export async function remove(id: number) {
   })
   return (res?.id == id)
 }
-
