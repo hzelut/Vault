@@ -14,5 +14,6 @@ export type FinanceType = {
 export type FinanceMonthly = {
   category: string
   amount: number
+  budget?: number
   items: Array<FinanceType>
 }

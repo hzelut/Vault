@@ -1,6 +1,7 @@
 import fetchQuery, { updateQuery, removeQuery } from '@/app/lib/database'
 import * as types from '@/app/types/finance'
 import { getNow, shiftDate } from '@/app/utils/date'
+import { getsMap } from '@/app/lib/budget'
 
 type ParsedResult = {
   category: string
@@ -66,6 +67,8 @@ export async function update(item: types.FinanceType): Promise<boolean> {
 
 export async function getsMonthly(year: number, month: number): Promise<Array<types.FinanceMonthly>> {
   try {
+    let isThisMonth = false
+    let budgetMap = null
     const thisMonth = Math.floor((new Date(year, month-1)).getTime() / 1000)
     const nextMonth = shiftDate(thisMonth, {months: 1})
 
@@ -75,6 +78,14 @@ export async function getsMonthly(year: number, month: number): Promise<Array<ty
       [thisMonth, nextMonth]
     ) as Array<types.FinanceType>
 
+    const today = new Date()
+    if(year === today.getFullYear() &&
+       month === today.getMonth()+1)
+      {
+        isThisMonth = true
+        budgetMap = await getsMap()
+      }
+
     // Grouping
     const map = new Map()
     res.forEach(item => {
@@ -83,8 +94,11 @@ export async function getsMonthly(year: number, month: number): Promise<Array<ty
       const group = map.get(item.category)
       group.items.push(item)
       group.amount += item.amount
+      if(isThisMonth) {
+        group.budget = budgetMap.get(item.category) ?? 0
+      }
     })
-    const monthly: Array<types.FinanceMonthly> = Array.from(map, ([category, {items, amount}]) => ({category, items, amount}))
+    const monthly: Array<types.FinanceMonthly> = Array.from(map, ([category, {items, amount, budget}]) => ({category, items, amount, budget}))
 
     return monthly
   } catch(err) {

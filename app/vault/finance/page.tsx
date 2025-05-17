@@ -103,7 +103,7 @@ function FinancePage() {
   return (
     <div className={styles.page}>
         <div className={`flexbox ${styles.headerWrap}`}>
-        <div className={`flexbox ${styles.header}`}>
+        <div className={`flexbox flexgrow-1 ${styles.header}`}>
           <a className={styles.arrow} href={`${pathname}?y=${year}&m=${month-1}`} >
             {'<<'}
           </a>
@@ -126,25 +126,41 @@ function FinancePage() {
         {Items?.map(group => (
           <div key={group.category} className={styles.group}>
             <div className={`flexbox ${styles.groupHeader}`}>
-              <div className={styles.category}>
+              <div className={`flexgrow-1 ${styles.category}`}>
                 {group.category}
               </div>
-              <div className={styles.totalAmount}>
-                {group.amount.toLocaleString()}
+              { group?.budget > 0 &&
+              <div className={`flexgrow-1 ${styles.memo}`}>
+                {group.budget.toLocaleString()}
+                {`(${Math.floor((group.amount/group.budget)*100)}%)`}
               </div>
+              }
+              <div className={`flexbox ${styles.totalAmount}`}>
+                <div className={styles.currentAmount}>
+                  {group.amount.toLocaleString()}
+                </div>
+              </div>
+              { group?.budget > 0 &&
+              <div className={styles.progress}>
+                <div className={styles.progressFill}
+                  style={{width: `${(group.amount/group.budget)*100}%`}}
+                >
+                </div>
+              </div>
+              }
             </div>
             <div className={styles.items}>
               {group.items?.map(item => (<>
                 { selected?.id === item.id ?<>
                   <form className={`flexbox ${styles.item}`} onSubmit={handleSave}>
                     <input type='text' name='category'
-                      className={styles.date}
+                      className={`flexgrow-1 ${styles.date}`}
                       value={selected.category} onChange={handleChange} />
                     <input type='text' name='memo'
-                      className={styles.memo} placeholder='memo...'
+                      className={`flexgrow-1 ${styles.memo}`} placeholder='memo...'
                       value={selected.memo} onChange={handleChange} />
                     <input type='number' name='amount'
-                      className={styles.amount} autoFocus
+                      className={`flexgrow-1 ${styles.amount}`} autoFocus
                       value={selected.amount} onChange={handleChange} />
                     <input type='submit' hidden />
                   </form>
@@ -152,25 +168,25 @@ function FinancePage() {
                     <input type='button' className={styles.saveBtn} value='Save'
                       onClick={handleSave}
                     />
-                    <input type='button' className={styles.deleteBtn} value='Delete'
+                    <input type='button' className={`flexgrow-1 ${styles.deleteBtn}`} value='Delete'
                       onClick={handleDel}
                     />
                   </div>
                 </>:
-                  <div key={item.id}
-                    onClick={() => setSelected(item)}
-                    className={`flexbox ${styles.item}`}
-                  >
-                    <div className={styles.date}>
-                      {dateFormat(item.date, {day: '2-digit'})}
-                    </div>
-                    <div className={styles.memo}>
-                      {item.memo}
-                    </div>
-                    <div className={styles.amount}>
-                      {item.amount.toLocaleString()}
-                    </div>
+                <div key={item.id}
+                  onClick={() => setSelected(item)}
+                  className={`flexbox ${styles.item}`}
+                >
+                  <div className={`flexgrow-1 ${styles.date}`}>
+                    {dateFormat(item.date, {day: '2-digit'})}
                   </div>
+                  <div className={`flexgrow-1 ${styles.memo}`}>
+                    {item.memo}
+                  </div>
+                  <div className={`flexgrow-1 ${styles.amount}`}>
+                    {item.amount.toLocaleString()}
+                  </div>
+                </div>
                 }
               </>))}
             </div>

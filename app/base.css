@@ -96,3 +96,6 @@ input::placeholder, textarea::placeholder {
 .flexbox {
   display: flex;
 }
+.flexgrow-1 {
+  flex: 1;
+}

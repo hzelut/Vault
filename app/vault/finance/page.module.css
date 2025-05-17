@@ -4,7 +4,6 @@
 }
 .header {
   justify-content: center;
-  flex: 1;
 }
 .settingBtn {
   align-items: center;
@@ -26,16 +25,40 @@
 .groupHeader {
   border-bottom: 1px solid var(--color-lightbg);
   margin: 1em 0 0.5em 0;
+  position: relative;
 }
 
 .groupHeader, .items {
   padding: 0 10%;
 }
 
+.progress {
+  box-sizing: border-box;
+  margin: 0 10%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  z-index: 0;
+  width: 80%;
+  overflow: hidden;
+}
+
+.progressFill {
+  margin-left: auto;
+  height: 100%;
+  width: 0;
+  background: var(--color-lightbg);
+}
+
+.category, .memo, .totalAmount {
+  position: relative;
+  z-index: 1;
+}
+
 .category {
   font-weight: bold;
   color: var(--color-green);
-  flex: 1;
 }
 .category::first-letter {
   text-transform: uppercase;
@@ -48,16 +71,8 @@
   gap: 1em;
 }
 
-.date {
-  flex: 1;
-}
 .amount {
-  flex: 1;
   text-align: right;
-}
-
-.memo {
-  flex: 2;
 }
 
 form.item, .formBtns {
@@ -80,7 +95,4 @@ form.item input,
 .saveBtn {
   flex: 3;
   font-weight: bold;
-}
-.deleteBtn {
-  flex: 1;
 }

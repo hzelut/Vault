@@ -38,18 +38,28 @@ export async function upsert(items: Array<types.BudgetType>): Promise<boolean> {
   return false
 }
 
-export async function gets(): Promise<Array<types.BudgetType>> {
+export async function getsMap(): Promise<Map<string, number>> {
   try {
     const res = await fetchQuery(
       `SELECT * FROM ${types.TABLE} ORDER BY amount ASC`,
       []
     ) as Array<types.BudgetType>
 
+    return new Map(res.map(item => [item.category, item.amount]))
+  } catch(err) {
+    console.error(err)
+  }
+
+  return null
+}
+
+export async function gets(): Promise<Array<types.BudgetType>> {
+  try {
+    const amountMap = await getsMap()
     const date = new Date()
     const year = date.getFullYear()
     const month = date.getMonth()+1
     const categories = await getsCategories(year, month)
-    const amountMap = new Map(res.map(item => [item.category, item.amount]))
 
     const budgets = categories.map(item => ({
       category: item.category,
