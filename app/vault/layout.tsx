@@ -11,6 +11,7 @@ export default function VaultLayout({
         <li><a href='/vault'>H</a></li>
         <li><a href='/vault/todo'>T</a></li>
         <li><a href='/vault/finance'>F</a></li>
+        <li><a href='/vault/note'>N</a></li>
       </ul>
     </nav>
     <main>
