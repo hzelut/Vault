@@ -1,5 +1,5 @@
 import * as types from '@/app/types/budget'
-import fetchQuery, { updateQuery, removeQuery } from '@/app/lib/database'
+import fetchQuery, { removeQuery } from '@/app/lib/database'
 import { getNow, shiftDate } from '@/app/utils/date'
 import { getsCategories } from '@/app/lib/finance'
 
@@ -7,24 +7,35 @@ export async function remove(id: number): Promise<boolean> {
   return await removeQuery(types.TABLE, id)
 }
 
-export async function update(item: types.BudgetType): Promise<boolean> {
-  const res = await updateQuery(types.TABLE, item, {id: item.id})
-  return (res === item.id)
-}
-
-async function getUnbudges() {
+export async function upsert(items: Array<types.BudgetType>): Promise<boolean> {
   try {
-    const date = new Date()
-    const year = date.getFullYear()
-    const month = date.getMonth()+1
+    let values = ''
+    const params = []
 
-    const res = await getsCategories(year, month)
-    console.log(res)
+    items.map(item => {
+      params.push(item.category, item.amount)
+      values += '(?,?),'
+    })
+    values = values.slice(0, -1)
+
+    const res = await fetchQuery(
+      `INSERT INTO ${types.TABLE}
+      (category,amount) VALUES ${values}
+      ON CONFLICT(category) DO UPDATE SET
+      amount = excluded.amount
+      RETURNING id
+      `, params
+    ) as Array<{id: number}>
+
+    if(res.length !== items.length)
+      throw new Error('Failed parse')
+
+    return true
   } catch(err) {
     console.error(err)
   }
 
-  return null
+  return false
 }
 
 export async function gets(): Promise<Array<types.BudgetType>> {
@@ -46,25 +57,6 @@ export async function gets(): Promise<Array<types.BudgetType>> {
     })) as Array<types.BudgetType>
 
     return budgets
-  } catch(err) {
-    console.error(err)
-  }
-
-  return null
-}
-
-export async function create(category: string, amount: number): Promise<number> {
-  try {
-    const res = await fetchQuery(
-      `INSERT INTO ${types.TABLE} (category,amount)
-      VALUES (?,?) RETURNING id`,
-      [category, amount]
-    ) as Array<{id: number}>
-
-    if(res.length !== 1)
-      throw new Error('Failed budget create')
-
-    return res[0].id
   } catch(err) {
     console.error(err)
   }
