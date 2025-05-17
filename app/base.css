@@ -99,3 +99,7 @@ input::placeholder, textarea::placeholder {
 .flexgrow-1 {
   flex: 1;
 }
+
+.text-right {
+  text-align: right;
+}

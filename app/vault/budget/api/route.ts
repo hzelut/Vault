@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { gets, upsert, remove } from '@/app/lib/budget'
-import { BudgetType } from '@/app/types/budget'
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const data = await gets()
   return NextResponse.json({data: data})
 }

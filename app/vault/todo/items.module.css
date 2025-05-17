@@ -31,7 +31,6 @@ form .check {
 form .name {
   grid-area: rh;
   align-self: center;
-  flex: 1;
 }
 form .body {
   grid-area: body;
@@ -82,7 +81,4 @@ form.item input[name=repeat_interval] {
 
 .saveBtn {
   flex: 3;
-}
-.deleteBtn {
-  flex: 1;
 }

@@ -63,16 +63,9 @@
 .category::first-letter {
   text-transform: uppercase;
 }
-.totalAmount {
-  text-align: right;
-}
 
 .item {
   gap: 1em;
-}
-
-.amount {
-  text-align: right;
 }
 
 form.item, .formBtns {

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { usePathname, useSearchParams } from 'next/navigation'
 import styles from './page.module.css'
 import { BudgetType } from '@/app/types/budget'
 import fetchAPI from '@/app/utils/api'
@@ -38,17 +37,17 @@ export default function Page() {
       <div className={styles.items}>
         {items?.map((item, i) => (
           <div className={`flexbox ${styles.item}`} key={item.id}>
-            <div className={styles.category}>
+            <div className={`flexgrow-1 ${styles.category}`}>
               {item.category}
             </div>
             <input type='number' name='amount'
-              className={styles.amount}
+              className={`flexgrow-1 text-right ${styles.amount}`}
               value={item.amount} onChange={(e) => handleChange(e, i)}
             />
           </div>
         ))}
         <div className={`flexbox ${styles.item}`}>
-          <div className={styles.saveBtn} onClick={() =>handleSave(items)}>
+          <div className={`flexgrow-1 ${styles.saveBtn}`} onClick={() =>handleSave(items)}>
             Save
           </div>
         </div>

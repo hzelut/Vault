@@ -89,7 +89,7 @@ export default function itemsView(
             <Checkbox className={styles.check} checked={!(!item.done)} onClick={(e) => onClickDone(e, item.id)}/>
             <input type='number' name='id' value={item.id} hidden />
             <div className='flexbox'>
-              <input className={styles.name} type='text' name='name' value={item.name} onChange={e => handleChange(e, i)} />
+              <input className={`flexgrow-1 ${styles.name}`} type='text' name='name' value={item.name} onChange={e => handleChange(e, i)} />
               <Button type='close' className={styles.close} onClick={() => setSelected(0)}/>
             </div>
             <div className={styles.body}>
@@ -126,7 +126,7 @@ export default function itemsView(
               </div>
               <div className='flexbox'>
                 <input className={styles.saveBtn} type='submit' value='Save'/>
-                <input className={styles.deleteBtn} type='button' value='Delete'
+                <input className={`flexgrow-1 ${styles.deleteBtn}`} type='button' value='Delete'
                   onClick={(e) => handleDelete(e, item.id)}
                 />
               </div>

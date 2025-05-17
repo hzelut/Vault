@@ -1,6 +1,5 @@
 import * as types from '@/app/types/budget'
 import fetchQuery, { removeQuery } from '@/app/lib/database'
-import { getNow, shiftDate } from '@/app/utils/date'
 import { getsCategories } from '@/app/lib/finance'
 
 export async function remove(id: number): Promise<boolean> {

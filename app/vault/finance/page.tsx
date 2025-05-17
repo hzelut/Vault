@@ -135,7 +135,7 @@ function FinancePage() {
                 {`(${Math.floor((group.amount/group.budget)*100)}%)`}
               </div>
               }
-              <div className={`flexbox ${styles.totalAmount}`}>
+              <div className={`flexbox text-right ${styles.totalAmount}`}>
                 <div className={styles.currentAmount}>
                   {group.amount.toLocaleString()}
                 </div>
@@ -160,7 +160,7 @@ function FinancePage() {
                       className={`flexgrow-1 ${styles.memo}`} placeholder='memo...'
                       value={selected.memo} onChange={handleChange} />
                     <input type='number' name='amount'
-                      className={`flexgrow-1 ${styles.amount}`} autoFocus
+                      className={`flexgrow-1 text-right ${styles.amount}`} autoFocus
                       value={selected.amount} onChange={handleChange} />
                     <input type='submit' hidden />
                   </form>
@@ -183,7 +183,7 @@ function FinancePage() {
                   <div className={`flexgrow-1 ${styles.memo}`}>
                     {item.memo}
                   </div>
-                  <div className={`flexgrow-1 ${styles.amount}`}>
+                  <div className={`flexgrow-1 text-right ${styles.amount}`}>
                     {item.amount.toLocaleString()}
                   </div>
                 </div>
